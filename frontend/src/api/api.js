@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api", // ✅ backend base URL
+  baseURL: "https://real-time-chat-application-1-0hnv.onrender.com/api", // ✅ backend base URL
   headers: {
     "Content-Type": "application/json"
   }
