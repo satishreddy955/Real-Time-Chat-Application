@@ -1,11 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import api from "../api/api"; // ✅ CHANGED
+import api from "../api/api"; 
 import { useParams, useNavigate } from "react-router-dom";
 import socket from "../socket";
 
-// =======================
-// Helpers
-// =======================
+
+
 const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
   if (!token) return null;
@@ -19,9 +18,9 @@ const formatTime = (date) =>
     minute: "2-digit"
   });
 
-// =======================
+
 // Chat Component
-// =======================
+
 const Chat = () => {
   const { chatId } = useParams();
   const navigate = useNavigate();
@@ -38,9 +37,9 @@ const Chat = () => {
   const token = localStorage.getItem("token");
   const loggedInUserId = getUserIdFromToken();
 
-  // =======================
+
   // FETCH MESSAGES
-  // =======================
+
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -48,7 +47,7 @@ const Chat = () => {
     }
 
     const fetchMessages = async () => {
-      const res = await api.get(`/messages/${chatId}`); // ✅ CHANGED
+      const res = await api.get(`/messages/${chatId}`); 
 
       setMessages(res.data);
 
@@ -74,9 +73,9 @@ const Chat = () => {
     fetchMessages();
   }, [chatId, navigate, token, loggedInUserId]);
 
-  // =======================
+
   // SOCKET: ONLINE USERS
-  // =======================
+
   useEffect(() => {
     const handleOnlineUsers = (users) => {
       setOnlineUsers(users);
@@ -90,9 +89,9 @@ const Chat = () => {
     };
   }, []);
 
-  // =======================
+
   // SOCKET: CHAT EVENTS
-  // =======================
+
   useEffect(() => {
     socket.emit("joinChat", chatId);
 
@@ -144,9 +143,9 @@ const Chat = () => {
     };
   }, [chatId, loggedInUserId]);
 
-  // =======================
+
   // MARK MESSAGES AS SEEN
-  // =======================
+
   useEffect(() => {
     const unseenIds = messages
       .filter(
@@ -164,16 +163,16 @@ const Chat = () => {
     }
   }, [messages, chatId, loggedInUserId]);
 
-  // =======================
+
   // AUTO SCROLL
-  // =======================
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  // =======================
+
   // SEND MESSAGE
-  // =======================
+
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
@@ -183,7 +182,7 @@ const Chat = () => {
       senderId: loggedInUserId
     });
 
-    const res = await api.post("/messages", { chatId, text }); // ✅ CHANGED
+    const res = await api.post("/messages", { chatId, text }); 
 
     setMessages((prev) => [...prev, res.data]);
     setText("");
@@ -199,7 +198,7 @@ const Chat = () => {
 
     const fetchLastSeen = async () => {
       const res = await api.get(
-        `/users/lastseen/${chatPartnerId}` // ✅ CHANGED
+        `/users/lastseen/${chatPartnerId}` 
       );
       setLastSeen(res.data.lastSeen);
     };
@@ -207,9 +206,7 @@ const Chat = () => {
     fetchLastSeen();
   }, [chatPartnerId, isPartnerOnline, token]);
   
-  // =======================
-  // UI
-  // =======================
+
   return (
     <div className="container-fluid vh-100 d-flex justify-content-center bg-light mt-2" style={{}}>
       <div className="card shadow-lg w-100" style={{ maxWidth: "85vw", height: "95vh" }}>
@@ -236,7 +233,7 @@ const Chat = () => {
 
           </div>
 
-          {/* 🔥 TYPING INDICATOR */}
+          {/*  TYPING INDICATOR */}
           {isTyping && (
             <small className="text-muted ps-1">
               Typing...
