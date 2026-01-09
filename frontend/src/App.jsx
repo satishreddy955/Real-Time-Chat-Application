@@ -20,7 +20,6 @@ function App() {
     const userId = getUserIdFromToken();
     if (!userId) return;
 
-    // 🔥 ENSURE SOCKET IS CONNECTED
     socket.connect();
 
     socket.on("connect", () => {
