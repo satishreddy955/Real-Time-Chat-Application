@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../api/api"; // ✅ CHANGED
+import api from "../api/api"; 
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
 
@@ -11,7 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const res = await api.post( // ✅ CHANGED
+    const res = await api.post( 
       "/auth/login",
       { email, password }
     );
@@ -22,7 +22,7 @@ const Login = () => {
       atob(res.data.token.split(".")[1])
     );
 
-    // 🔥 WAIT FOR SOCKET CONNECT
+   
     socket.connect();
 
     socket.once("connect", () => {
