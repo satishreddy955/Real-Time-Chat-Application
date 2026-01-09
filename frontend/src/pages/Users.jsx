@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../api/api"; // ✅ CHANGED
+import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
 
@@ -12,21 +12,21 @@ const Users = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  /* ================= GET USER ID FROM TOKEN ================= */
+  // GET USER ID FROM TOKEN 
   const getUserIdFromToken = () => {
     if (!token) return null;
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.id;
   };
 
-  /* ================= LOGOUT ================= */
+  //LOGOUT 
   const handleLogout = () => {
     socket.disconnect();
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  /* ================= MARK USER ONLINE ================= */
+  // MARK USER ONLINE
   useEffect(() => {
     if (!token) return navigate("/login");
 
@@ -38,22 +38,22 @@ const Users = () => {
     socket.emit("getOnlineUsers");
   }, [token, navigate]);
 
-  /* ================= FETCH USERS ================= */
+  // FETCH USERS 
   useEffect(() => {
     if (!token) return navigate("/login");
 
     api
-      .get("/users") // ✅ CHANGED
+      .get("/users") // 
       .then((res) => setUsers(res.data))
       .catch(() => navigate("/login"));
   }, [navigate, token]);
 
-  /* ================= FETCH LAST MESSAGE ================= */
+  //FETCH LAST MESSAGE 
   const fetchLastMessageTime = async (chatId) => {
     if (!chatId) return;
 
     try {
-      const res = await api.get(`/messages/${chatId}`); // ✅ CHANGED
+      const res = await api.get(`/messages/${chatId}`); 
 
       if (res.data.length > 0) {
         const lastMsg = res.data[res.data.length - 1];
@@ -67,13 +67,13 @@ const Users = () => {
     }
   };
 
-  /* ================= FETCH UNREAD COUNT ================= */
+  // FETCH UNREAD COUNT 
   const fetchUnreadCount = async (chatId) => {
     if (!chatId) return;
 
     try {
       const res = await api.get(
-        `/messages/unread/${chatId}` // ✅ CHANGED
+        `/messages/unread/${chatId}` 
       );
 
       setUnreadCounts((prev) => ({
@@ -85,7 +85,7 @@ const Users = () => {
     }
   };
 
-  /* ================= INITIAL LOAD ================= */
+  // INITIAL LOAD 
   useEffect(() => {
     users.forEach((user) => {
       if (user.chatId) {
@@ -95,7 +95,7 @@ const Users = () => {
     });
   }, [users]);
 
-  /* ================= REALTIME MESSAGE UPDATE ================= */
+  //REALTIME MESSAGE UPDATE
   useEffect(() => {
     const handleNewMessage = ({ chatId }) => {
       fetchUnreadCount(chatId);
@@ -111,7 +111,7 @@ const Users = () => {
     };
   }, []);
 
-  /* ================= ONLINE USERS LISTENER ================= */
+  //ONLINE USERS LISTENER
   useEffect(() => {
     socket.on("onlineUsers", (users) => {
       setOnlineUsers(users);
@@ -120,9 +120,9 @@ const Users = () => {
     return () => socket.off("onlineUsers");
   }, []);
 
-  /* ================= START CHAT ================= */
+  //START CHAT 
   const startChat = async (otherUserId) => {
-    const res = await api.post( // ✅ CHANGED
+    const res = await api.post( 
       "/chat",
       { userId: otherUserId }
     );
@@ -130,7 +130,7 @@ const Users = () => {
     navigate(`/chat/${res.data._id}`);
   };
 
-  /* ================= SORT USERS ================= */
+  // SORT USERS  
   const sortedUsers = [...users].sort((a, b) => {
     const timeA = lastMessageTime[a.chatId] || 0;
     const timeB = lastMessageTime[b.chatId] || 0;
