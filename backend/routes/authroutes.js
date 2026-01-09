@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
-/* ================= REGISTER ================= */
+//REGISTER 
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -30,8 +30,8 @@ router.post("/register", async (req, res) => {
   }
 });
 
-/* ================= LOGIN ================= */
-router.post("/login", async (req, res) => {   // ✅ req, res added
+//LOGIN 
+router.post("/login", async (req, res) => {   
   try {
     const { email, password } = req.body;
     console.log(email,password);
@@ -41,7 +41,7 @@ router.post("/login", async (req, res) => {   // ✅ req, res added
       return res.status(400).json({ message: "User not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password); // ✅ await
+    const isMatch = await bcrypt.compare(password, user.password); 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {   // ✅ req, res added
     return res.json({ token, message: "Login Successful" });
 
   } catch (error) {
-    return res.status(500).json({ error: error.message }); // ✅ fixed
+    return res.status(500).json({ error: error.message }); 
   }
 });
 
