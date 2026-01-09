@@ -13,74 +13,64 @@ import messageRoutes from "./routes/messageRoutes.js";
 const app = express();
 const server = http.createServer(app);
 
-// =======================
-// Database
-// =======================
 connectDB();
 
-// =======================
-// Middlewares
-// =======================
 app.use(express.json());
 app.use(cors());
 
-// =======================
-// Routes
-// =======================
 app.use("/api/auth", authroutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
-// =======================
+
 // Socket.IO Setup
-// =======================
+
 const io = new Server(server, {
   cors: {
-    origin: "https://real-time-chat-application-nqaa.vercel.app",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
 
 app.set("io", io);
 
-// =======================
+
 // Online Users Store
 // userId -> socketId
-// =======================
+
 const onlineUsers = new Map();
 app.set("onlineUsers", onlineUsers);
 
-// =======================
+
 // Socket Events
-// =======================
+
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
 
-  // ===================
+
   // USER ONLINE
-  // ===================
+
   socket.on("userOnline", (userId) => {
     socket.userId = userId;
     onlineUsers.set(userId, socket.id);
 
-    // 🔥 broadcast presence
+    // broadcast presence
     io.emit("onlineUsers", Array.from(onlineUsers.keys()));
 
-    // 🔽 background delivery
+    //  background delivery
     deliverPendingMessages(userId);
   });
 
-  // ===================
   // JOIN CHAT ROOM
-  // ===================
+
   socket.on("joinChat", (chatId) => {
     socket.join(chatId);
   });
 
-  // ===================
+
   // TYPING INDICATOR
-  // ===================
+
   socket.on("typing", ({ chatId, senderId }) => {
     if (!chatId) return;
     socket.to(chatId).emit("typing", { senderId });
@@ -91,9 +81,9 @@ io.on("connection", (socket) => {
     socket.to(chatId).emit("stopTyping", { senderId });
   });
 
-  // ===================
+
   // MESSAGE SEEN
-  // ===================
+
   socket.on("messageSeen", async ({ chatId, messageIds }) => {
     try {
       const Message = (await import("./models/Message.js")).default;
@@ -109,22 +99,22 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ===================
+
   // GET ONLINE USERS
-  // ===================
+
   socket.on("getOnlineUsers", () => {
     socket.emit("onlineUsers", Array.from(onlineUsers.keys()));
   });
 
-  // ===================
+
   // DISCONNECT
-  // ===================
+
   socket.on("disconnect", async () => {
     if (socket.userId) {
       onlineUsers.delete(socket.userId);
       io.emit("onlineUsers", Array.from(onlineUsers.keys()));
 
-      // 🔥 update last seen
+      //  update last seen
       const User = (await import("./models/User.js")).default;
       await User.findByIdAndUpdate(socket.userId, {
         lastSeen: new Date()
@@ -135,9 +125,9 @@ io.on("connection", (socket) => {
   });
 });
 
-// =======================
+
 // BACKGROUND DELIVERY FUNCTION
-// =======================
+
 const deliverPendingMessages = async (userId) => {
   try {
     const Message = (await import("./models/Message.js")).default;
@@ -173,9 +163,8 @@ const deliverPendingMessages = async (userId) => {
   }
 };
 
-// =======================
-// Server Start
-// =======================
+
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
