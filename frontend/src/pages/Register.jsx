@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../api/api"; // ✅ CHANGED
+import api from "../api/api"; 
 import { useNavigate } from "react-router-dom";
 
 function Register() {
@@ -12,7 +12,7 @@ function Register() {
     e.preventDefault();
 
     try {
-      const res = await api.post( // ✅ CHANGED
+      const res = await api.post( 
         "/auth/register",
         { name, email, password }
       );
