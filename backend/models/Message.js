@@ -16,8 +16,6 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-
-    // ✅ NEW FIELD (ADDED ONLY)
     status: {
       type: String,
       enum: ["sent", "delivered", "seen"],
