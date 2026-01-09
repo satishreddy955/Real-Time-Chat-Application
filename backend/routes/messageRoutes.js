@@ -5,22 +5,15 @@ import authMiddleware from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
-/*
-STATUS FLOW
-sent       -> single tick
-delivered  -> double tick (grey)
-seen       -> double tick (blue)
-*/
 
-// =======================
-// SEND MESSAGE (FINAL)
-// =======================
+// SEND MESSAGE
+
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { chatId, text } = req.body;
     const senderId = req.user.id;
 
-    // 1️⃣ Save message as SENT
+    //  Save message as SENT
     const message = await Message.create({
       chat: chatId,
       sender: senderId,
@@ -36,18 +29,18 @@ router.post("/", authMiddleware, async (req, res) => {
     const io = req.app.get("io");
     const onlineUsers = req.app.get("onlineUsers");
 
-    // 2️⃣ Emit message to chat room
+    //  Emit message to chat room
     io.to(chatId.toString()).emit(
       "receiveMessage",
       populatedMessage
     );
 
-    // 🔥 NOTIFY USERS PAGE (UNREAD COUNT)
+    // NOTIFY USERS PAGE (UNREAD COUNT)
     io.emit("unreadUpdate", { chatId });
 
-    // ==========================
-    // 🔥 DELIVERY CHECK
-    // ==========================
+
+    // DELIVERY CHECK
+
     const chat = await Chat.findById(chatId);
 
     if (chat) {
@@ -70,7 +63,7 @@ router.post("/", authMiddleware, async (req, res) => {
       }
     }
 
-    // 3️⃣ Response
+    //  Response
     res.status(201).json(populatedMessage);
 
   } catch (error) {
@@ -79,9 +72,9 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// =======================
+
 // FETCH MESSAGES
-// =======================
+
 router.get("/:chatId", authMiddleware, async (req, res) => {
   try {
     const messages = await Message.find({
@@ -96,9 +89,8 @@ router.get("/:chatId", authMiddleware, async (req, res) => {
   }
 });
 
-// =======================
 // GET UNREAD COUNT FOR A CHAT
-// =======================
+
 router.get(
   "/unread/:chatId",
   authMiddleware,
