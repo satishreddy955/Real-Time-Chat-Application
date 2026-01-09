@@ -26,7 +26,7 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ GET CHAT BY ID (THIS WAS MISSING)
+//GET CHAT BY ID 
 router.get("/:chatId", authMiddleware, async (req, res) => {
   try {
     const chat = await Chat.findById(req.params.chatId)
