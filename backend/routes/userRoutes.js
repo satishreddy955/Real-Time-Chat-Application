@@ -1,29 +1,29 @@
 import express from "express";
 import User from "../models/User.js";
-import Chat from "../models/Chat.js"; // 🔥 REQUIRED
+import Chat from "../models/Chat.js"; 
 import authMiddleware from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
-// =======================
+
 // GET ALL USERS (WITH chatId)
-// =======================
+
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const loggedInUserId = req.user.id;
 
-    // 1️⃣ Get all users except self
+    //  Get all users except self
     const users = await User.find(
       { _id: { $ne: loggedInUserId } },
       "name email"
     );
 
-    // 2️⃣ Get all chats where logged-in user is a participant
+    //  Get all chats where logged-in user is a participant
     const chats = await Chat.find({
       participants: loggedInUserId
     });
 
-    // 3️⃣ Attach chatId to each user
+    //  Attach chatId to each user
     const usersWithChatId = users.map((user) => {
       const chat = chats.find((c) =>
         c.participants.some(
@@ -46,9 +46,9 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// =======================
+
 // GET LAST SEEN
-// =======================
+
 router.get("/lastseen/:userId", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).select("lastSeen");
